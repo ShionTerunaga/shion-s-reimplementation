@@ -2,7 +2,7 @@ import type { version } from "./versions";
 import type * as errors from "./errors.js";
 import * as util from "./utils.js";
 import type * as core from "./core.js";
-import type * as checks from "./checker.js";
+import type * as checks from "./checks.js";
 import type { StandardSchemaV1 } from "./standard-schema.js";
 
 export interface $ZodTypeInternals<out O = unknown, out I = unknown>
@@ -59,6 +59,9 @@ export interface $ZodType<
   _zod: Internals;
   "~standard": $ZodStandardSchema<this>;
 }
+
+export interface _$ZodType<T extends $ZodTypeInternals = $ZodTypeInternals>
+  extends $ZodType<T["output"], T["input"], T> {}
 
 export interface $ZodTypeDef {
   type:
@@ -125,4 +128,53 @@ export type CheckFn<T> = (intput: ParsePayload<T>) => util.MaybeAsync<void>;
 
 export interface SomeType {
   _zod: _$ZodTypeInternals;
+}
+
+export interface $ZodStringDef extends $ZodTypeDef {
+  type: "string";
+  coerce: boolean;
+  checks?: Array<checks.$ZodCheck<string>>;
+}
+
+export interface $ZodStringFormatDef<Format extends string = string>
+  extends $ZodStringDef,
+    checks.$ZodCheckStringFormatDef<Format> {}
+
+export interface $ZodStringFormatInternals<Format extends string = string>
+  extends $ZodStringInternals<string>,
+    checks.$ZodCheckStringFormatInternals {
+  def: $ZodStringFormatDef<Format>;
+}
+
+export interface $ZodStringFormat<Format extends string = string>
+  extends $ZodType {
+  _zod: $ZodStringFormatInternals<Format>;
+}
+
+export interface $ZodStringInternals<Input>
+  extends $ZodTypeInternals<string, Input> {
+  def: $ZodStringDef;
+
+  pattern: RegExp;
+
+  isst: errors.$ZodIssueInvalidType;
+  bag: util.LoosePartial<{
+    minimum: number;
+    maximum: number;
+    patterns: Set<RegExp>;
+    contentsEncoding: string;
+  }>;
+}
+
+export interface $ZodString<Input = unknown>
+  extends _$ZodType<$ZodStringInternals<Input>> {}
+
+//Email
+
+export interface $ZodEmailDef extends $ZodStringFormatDef<"email"> {}
+export interface $ZodEmailInternals
+  extends $ZodStringFormatInternals<"email"> {}
+
+export interface $ZodEmail extends $ZodType {
+  _zod: $ZodEmailInternals;
 }

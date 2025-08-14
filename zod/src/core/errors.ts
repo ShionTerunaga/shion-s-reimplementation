@@ -1,5 +1,5 @@
 import type { $ } from "bun";
-import type { $ZodCheck, $ZodStringFormats } from "./checker.js";
+import type { $ZodCheck, $ZodStringFormats } from "./checks.js";
 import type { $ZodType } from "./schemas";
 import * as utils from "./utils.js";
 

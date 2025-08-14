@@ -1,5 +1,6 @@
-import * as core from "../core/core";
-import * as schema from "../core/schemas";
+import * as core from "../core";
+import * as schema from "./schemas";
 
-export interface ZodCoercedString<T = unknown> {}
-export function string<T = unknown>(params?: string) {}
+export interface ZodCoercedString<T = unknown>
+  extends schema._ZodString<core.$ZodStringInternals<T>> {}
+export function string<T = unknown>(params?: string | core.$ZodStringParams) {}

@@ -45,4 +45,5 @@ export interface _ZodString<
   T extends cores.$ZodStringInternals<unknown> = cores.$ZodStringInternals<unknown>
 > extends _ZodType<T> {}
 
-export interface ZodString {}
+export interface ZodString
+  extends _ZodString<cores.$ZodStringInternals<string>> {}

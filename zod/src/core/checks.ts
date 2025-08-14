@@ -10,7 +10,7 @@ export interface $ZodCheckDef {
 }
 
 export interface $ZodCheckInternals<T> {
-  def: $ZodCheck;
+  def: $ZodCheckDef;
   issc?: error.$ZodIssueBase;
   check(payloads: schemes.ParsePayload<T>): util.MaybeAsync<void>;
 }
@@ -50,3 +50,16 @@ export type $ZodStringFormats =
   | "starts_with"
   | "ends_with"
   | "includes";
+
+export interface $ZodCheckStringFormatDef<Format extends string = string>
+  extends $ZodCheckDef {
+  check: "string_format";
+  format: Format;
+  pattern?: RegExp | undefined;
+}
+
+export interface $ZodCheckStringFormatInternals
+  extends $ZodCheckInternals<string> {
+  def: $ZodCheckStringFormatDef;
+  issc: error.$ZodIssueInvalidStringFormat;
+}

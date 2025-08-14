@@ -22,3 +22,9 @@ export type PropValues = Record<string, Set<Primitive>>;
 export type LoosePartial<T extends object> = InexactPartial<T> & {
   [k: string]: unknown;
 };
+
+export type EmptyToNever<T> = keyof T extends never ? never : T;
+
+export abstract class Class {
+  constructor(...args: any[]) {}
+}
