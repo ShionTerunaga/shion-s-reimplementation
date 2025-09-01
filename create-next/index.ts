@@ -1,3 +1,3 @@
-import { run } from "./src/main/app";
+import { errorExit, notify, run } from "./src/main/app";
 
-run().then().catch(console.error);
+run().then(notify).catch(errorExit);

@@ -1,10 +1,11 @@
-import { bold } from "picocolors";
+import { bold, cyan } from "picocolors";
 import type { InstallTemplateArgs } from "./types";
 import { copy } from "../main/helper/copy";
 import path from "path";
 import fs from "fs/promises";
 import { Sema } from "async-sema";
 import { async as glob } from "fast-glob";
+import os from "os";
 
 interface DevDependencies {
   devDependencies?: Record<string, string | undefined>;
@@ -152,11 +153,27 @@ export const installTemplate = async ({
     };
   }
 
-  if (
-    packageJson.devDependencies &&
-    typeof packageJson.devDependencies === "object"
-  ) {
-    const devDeps = Object.keys(packageJson.devDependencies).length;
-    if (!devDeps) delete packageJson.devDependencies;
+  const devDeps = packageJson.devDependencies
+    ? Object.keys(packageJson.devDependencies).length
+    : 0;
+
+  if (devDeps < 1) delete packageJson.devDependencies;
+
+  await fs.writeFile(
+    path.join(root, "package.json"),
+    JSON.stringify(packageJson, null, 2) + os.EOL,
+  );
+
+  console.log("\nInstalling dependencies:");
+  for (const dependency in packageJson.dependencies)
+    console.log(`- ${cyan(dependency)}`);
+
+  if (devDeps) {
+    console.log("\nInstalling devDependencies:");
+    for (const dependency in packageJson.devDependencies)
+      console.log(`- ${cyan(dependency)}`);
   }
+
+  console.log();
+  //nextはinstallするけどしない
 };

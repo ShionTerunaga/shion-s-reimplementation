@@ -8,6 +8,7 @@ import ciInfo from "ci-info";
 import { validateNpmName } from "./helper/validate-pkg";
 import { blue, bold, red } from "picocolors";
 import { isFolderEmpty } from "./helper/is-folder-empty";
+import { createApp } from "./create-app";
 
 export let projectPath: string = "";
 
@@ -145,6 +146,7 @@ export async function run(): Promise<void> {
       },
     }
   );
+  opts.typescript = Boolean(typescript);
   preferences.typescript = Boolean(typescript);
 
   const styledEslint = blue("ESLint");
@@ -159,6 +161,7 @@ export async function run(): Promise<void> {
     inactive: "No",
   });
   preferences.eslint = Boolean(eslint);
+  opts.eslint = Boolean(eslint);
 
   const styledSrcDir = blue("`src/` directory");
   const { srcDir } = await prompts({
@@ -170,7 +173,7 @@ export async function run(): Promise<void> {
     active: "Yes",
     inactive: "No",
   });
-
+  opts.srcDir = Boolean(srcDir);
   preferences.srcDir = Boolean(srcDir);
 
   const styledAppDir = blue("App Router");
@@ -184,6 +187,7 @@ export async function run(): Promise<void> {
     inactive: "No",
   });
   preferences.app = Boolean(app);
+  opts.app = Boolean(app);
 
   const importAliasPattern = /^[^*"]+\/\*\s*$/;
 
@@ -217,5 +221,39 @@ export async function run(): Promise<void> {
     preferences.importAlias = importAlias;
   }
 
-  console.log(preferences);
+  console.log(JSON.stringify(opts, null, 2));
+
+  try {
+    await createApp({
+      appPath,
+      typescript: opts.typescript,
+      eslint: opts.eslint,
+      app: opts.app,
+      srcDir: opts.srcDir,
+      importAlias: opts.importAlias,
+    });
+  } catch (e) {
+    console.error(red("An error occurred while creating the project."));
+    if (e instanceof Error) {
+      console.error(red(e.message));
+    }
+    process.exit(1);
+  }
+}
+
+export function notify() {
+  console.log("cd " + projectPath);
+
+  console.log("pnpm install");
+
+  console.log("pnpm dev");
+
+  console.log();
+
+  console.log(bold("Happy hacking!"));
+  process.exit(0);
+}
+
+export function errorExit() {
+  process.exit(1);
 }

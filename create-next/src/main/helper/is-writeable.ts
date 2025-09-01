@@ -1,8 +1,9 @@
 import { access } from "node:fs/promises";
+import { W_OK } from "node:constants";
 
 export async function isWriteable(directory: string): Promise<boolean> {
   try {
-    await access(directory);
+    await access(directory, W_OK);
     return true;
   } catch {
     return false;
